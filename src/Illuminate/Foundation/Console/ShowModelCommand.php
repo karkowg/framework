@@ -6,7 +6,6 @@ use BackedEnum;
 use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Types\DecimalType;
-use Illuminate\Console\Command;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Console\DatabaseInspectionCommand;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -78,7 +77,7 @@ class ShowModelCommand extends DatabaseInspectionCommand
     /**
      * Execute the console command.
      *
-     * @return void
+     * @return int
      */
     public function handle()
     {
@@ -115,7 +114,7 @@ class ShowModelCommand extends DatabaseInspectionCommand
      * Get the first policy associated with this model.
      *
      * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @return Illuminate\Support\Collection
+     * @return string
      */
     protected function getPolicy($model)
     {
@@ -133,8 +132,9 @@ class ShowModelCommand extends DatabaseInspectionCommand
      */
     protected function getAttributes($model)
     {
-        $schema = $model->getConnection()->getDoctrineSchemaManager();
-        $this->registerTypeMappings($schema->getDatabasePlatform());
+        $connection = $model->getConnection();
+        $schema = $connection->getDoctrineSchemaManager();
+        $this->registerTypeMappings($connection->getDoctrineConnection()->getDatabasePlatform());
         $table = $model->getConnection()->getTablePrefix().$model->getTable();
         $columns = $schema->listTableColumns($table);
         $indexes = $schema->listTableIndexes($table);
@@ -246,7 +246,7 @@ class ShowModelCommand extends DatabaseInspectionCommand
      * Get the Observers watching this model.
      *
      * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @return Illuminate\Support\Collection
+     * @return \Illuminate\Support\Collection
      */
     protected function getObservers($model)
     {
